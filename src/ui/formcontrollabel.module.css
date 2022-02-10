@@ -1,0 +1,8 @@
+/* style={{ fontWeight: 200}} */
+.radiobutton {
+  font-weight: 100;
+}
+
+.MuiFormControlLabel-label {
+  font-weight: 100;
+}
