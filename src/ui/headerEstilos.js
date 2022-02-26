@@ -5,15 +5,15 @@ import {
 import { AppBar } from "@mui/material";
 
 export const TamanaDeLogo = styled('svg')(({ theme }) => ({
-  height: "7em",  
+  height: "6em",  
   [theme.breakpoints.down("md")]: {
-    height: "6em",
+    height: "5em",
   } ,
   [theme.breakpoints.down("sm")]: {
-    height: "5em",
+    height: "4em",
   },
   [theme.breakpoints.down("xs")]: {
-    height: "4em",
+    height: "3em",
   }    
 }) );
 

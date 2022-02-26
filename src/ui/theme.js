@@ -16,12 +16,12 @@ const theme = createTheme({
       dark: '#002884',
       contrastText: '#fff',
     },
-    // secondary: {
-    //   main: `${arcOrange}`
-    // }
-    // action: {
-    //   selected: `${arcOrange}`,
-    // }
+    secondary: {
+      main: `${arcOrange}`
+    },
+    action: {
+      selected: `${arcOrange}`,
+    }
   },
   typography: {
     h1: {
@@ -124,38 +124,50 @@ const theme = createTheme({
         }
       }
     },
-    MuiDataGrid: {
+    MuiDataGrid: {  
       styleOverrides: {
+        root: {
+          color: arcBlue,          
+          boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+          border: `1px solid ${arcBlue}`,          
+        },
         columnHeaderTitle: {
           fontSize: '1rem',
-          fontWeight: 700,
-          color: arcBlue,
+          fontWeight: 300,
+          color: '#fffff0',            
         },
-        columnHeaders: {
-          // borderBottom: `1px solid ${arcBlue}`,
-          border: `1px solid ${arcBlue}`,
-          borderWidth: 2,
+        columnHeaders: { 
+          backgroundColor: arcBlue,
         },
         row: {
-          border: `1px solid ${arcBlue}`,
+           
+        }, 
+        footerContainer: {       
+          color: '#fffff0',
+          backgroundColor: arcBlue,
         },
-
+      }
+    },
+    MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          color: '#fffff0',          
+        }
       }
     },
     MuiCalendarPicker: {
       styleOverrides: {
         root: {
           // textTransform: 'uppercase',
-          backgroundColor: '#fff999',          
+          backgroundColor: '#fff999',
         },
       }
     },
-    MuiFormControlLabel:{
+    MuiFormControlLabel: {
       styleOverrides: {
         label: {
           color: arcBlue,
           fontWeight: 100,
-          
         },
         root: {
           marginRight: 0,
@@ -164,7 +176,7 @@ const theme = createTheme({
     },
     MuiTypography: {
       styleOverrides: {
-        body1: {          
+        body1: {
           // backgroundColor: '#fff999', 
         }
       }

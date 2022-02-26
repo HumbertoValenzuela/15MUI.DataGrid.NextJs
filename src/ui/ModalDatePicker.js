@@ -1,14 +1,15 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import TextField from '@mui/material/TextField';
 // Fechas
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 // import Format from 'date-fns/format';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DatePicker from '@mui/lab/DatePicker';
+
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import esLocale from 'date-fns/locale/es';
 // Mui 
-import { Button, Dialog, DialogContent, Grid, InputAdornment, styled, Typography } from '@mui/material';
+import { Button, Dialog, DialogContent, Grid, InputAdornment, styled, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 // Radio
 import Radio from '@mui/material/Radio';
@@ -32,6 +33,11 @@ const Estiloradiogroup = styled(FormControlLabel)({
 
 const ModalDatePicker = (props) => {
 
+  // useMediaQuery
+  const theme = useTheme();
+  const matchesMD = useMediaQuery(theme.breakpoints.down('md'));
+  const matchesSM = useMediaQuery(theme.breakpoints.down('sm'));
+
   // Para modal y grilla
   const { dialogOpen, setDialogOpen, rowgrilla, setRowgrilla } = props;
   // Array para select
@@ -40,17 +46,20 @@ const ModalDatePicker = (props) => {
   let websiteOptions = ['Basic', 'Interactive', 'E-Commerce'];
 
   const defaultValues = {
+    id: 0,
     nombre: '',
     fechaValue: new Date(),
-    total: '',
     service: 'Website',
-    users: '',
+    features: [],
     complexity: '',
     sistema: [],
-    features: []
+    users: '',
+    total: 0,
+    search: 'true'
   }
 
-  const [formulariostate, setformulariostate] = React.useState(defaultValues);
+  const [formulariostate, setformulariostate] = useState(defaultValues);
+  const [isPending, setIsPending] = useState(false);
   const [fechaValor, setfechaValor] = useState(new Date());
 
   const handleChangeFecha = (e) => {
@@ -67,12 +76,24 @@ const ModalDatePicker = (props) => {
 
 
 
-  const onSubmitFormulario = () => {
+  const onSubmitFormulario = async() => {
 
-    let idRow = rowgrilla.length + 1;
+    setIsPending(true);
+    // console.log('formulariostate', formulariostate);
+    const respuesta = await fetch('https://nodemysql2storeprocedure-query.herokuapp.com/api/clientes/crearcliente', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formulariostate)
+    });
+    const json = await respuesta.json();
+    // console.log('json', json);
+    setIsPending(false);
 
+    // console.log(json[0][0].id);
+    // let idRow = rowgrilla.length + 1;
+    // console.log(rowgrilla.length)
     setRowgrilla([...rowgrilla, {
-      id: idRow,
+      id: json[0][0].id,
       nombre: formulariostate.nombre,
       fechaValue: format(formulariostate.fechaValue, 'dd/MM/yyyy'),
       service: formulariostate.service,
@@ -80,52 +101,64 @@ const ModalDatePicker = (props) => {
       complexity: formulariostate.service === 'Website' ? 'N/A' : formulariostate.complexity,
       sistema: formulariostate.service === 'Website' ? 'N/A' : formulariostate.sistema.join(', '),
       users: formulariostate.service === 'Website' ? 'N/A' : formulariostate.users,
-      total: `$${formulariostate.total}`,
+      total: formulariostate.total,
+      // new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(formulariostate.total)
+      // Number(formulariostate.total)
+      search: 'true'
     }]);
     // console.log(rowgrilla);
+    // new Intl.NumberFormat("es-CL", {style: "currency", currency: "CLP"}).format(formulariostate.total)
 
     setDialogOpen(false);
-    console.log('formularioState ', formulariostate);
-    reset();
+    // console.log('formularioState ', formulariostate);
+    reset();    
   }
 
   const reset = () => {
-    setformulariostate(defaultValues);
+    setformulariostate(defaultValues);    
   }
 
   useEffect(() => {
-    setformulariostate({ ...formulariostate, features: []  });
+    setformulariostate({ ...formulariostate, features: [] });
   }, [formulariostate.service]);
-  
+
 
   // const disableButtonvalidacion = () => {}
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} locale={esLocale} >
+
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         fullWidth
+        fullScreen={matchesSM}
         maxWidth='md'
-        style={{ marginTop: '6em' }}
+        style={{ marginTop: matchesSM ? '4em' : '6em' }}
       >
-        <Grid container style={{ backgroundColor: '#dfdddd' }} >
+        <Grid container  >
           <Grid item>
-            <Typography variant='h2' gutterBottom>
+            <Typography variant={matchesSM ? 'h6' : 'h4'} gutterBottom>
               Add a new Project
             </Typography>
           </Grid>
         </Grid>
 
-        <DialogContent style={{ backgroundColor: '#dfdddd' }}>
+        <DialogContent >
           {/* <form onSubmit={onSubmitFormulario}> */}
-          <Grid container justifyContent='space-around' >
+          <Grid
+            container
+            justifyContent='space-around'
+            direction={matchesMD ? 'column' : 'row'}
+            alignItems={matchesMD ? 'center' : undefined}
+          >
 
             <Grid item>
 
               <Grid item container direction='column' sm>
                 <Grid item>
                   <TextField
+                    style={{ width: matchesSM ? 200 : undefined }}
                     variant="filled"
                     name='nombre'
                     label='Name'
@@ -181,12 +214,13 @@ const ModalDatePicker = (props) => {
                   </Typography>
                 </Grid>
 
-                <Grid item>
+                <Grid item style={{ marginTop: matchesSM ? '1em' : 0 }}>
                   <FormControl variant="filled" sx={{ width: 205 }}>
                     <InputLabel id="sistemainputlabel">Multiple Sistema</InputLabel>
                     <Select
                       MenuProps={{ style: { zindex: 1302 } }}
                       multiple
+                      style={{ width: matchesSM ? 200 : undefined }}
                       name='sistema'
                       onChange={handleFormularioChange}
                       value={formulariostate.sistema}
@@ -216,14 +250,14 @@ const ModalDatePicker = (props) => {
 
             <Grid item>
 
-              <Grid item container direction='column' sm >
+              <Grid item container direction='column' sm style={{ marginTop: matchesSM ? '1em' : 0 }}>
                 <Grid item >
 
-                  <DatePicker
-                    label="Basic example"
+                  <MobileDatePicker
+                    label="Date"
                     value={fechaValor}
                     onChange={handleChangeFecha}
-                    renderInput={(params) => <TextField {...params} />}
+                    renderInput={(params) => <TextField style={{ width: matchesSM ? 200 : undefined }} {...params} />}
                   />
                   <Grid item>
                     <Typography
@@ -236,7 +270,7 @@ const ModalDatePicker = (props) => {
 
                 </Grid>
 
-                <Grid item container style={{ marginTop: '1em' }} justifyContent='center' >
+                <Grid item container style={{ marginTop: '1em' }} justifyContent={matchesSM ? undefined : 'center'} >
                   <Grid item>
                     <FormControl component="fieldset">
                       <FormLabel component="legend">Complexity</FormLabel>
@@ -273,7 +307,7 @@ const ModalDatePicker = (props) => {
                   </Grid>
                 </Grid>
 
-                <Grid item alignSelf='center'>
+                <Grid item alignSelf='flex-start'>
 
                   <Typography
                     variant='body2'
@@ -288,13 +322,14 @@ const ModalDatePicker = (props) => {
 
             <Grid item>
 
-              <Grid item container direction='column' sm>
+              <Grid item container direction='column' sm style={{ marginTop: matchesSM ? '1em' : 0 }}>
                 <Grid item>
                   {/* <FormTextField
                       name={"total"}
                       label="Total"
                     /> */}
                   <TextField
+                    style={{ width: matchesSM ? 200 : undefined }}
                     type='number'
                     variant="filled"
                     name='total'
@@ -311,7 +346,7 @@ const ModalDatePicker = (props) => {
                   </Typography>
                 </Grid>
 
-                <Grid item container style={{ marginTop: '1em' }} justifyContent='flex-end'>
+                <Grid item container style={{ marginTop: '1em' }} justifyContent={matchesSM ? undefined : 'flex-end'}>
                   <Grid item>
                     <FormControl component="fieldset">
                       <FormLabel component="legend">Users</FormLabel>
@@ -355,7 +390,7 @@ const ModalDatePicker = (props) => {
                   </Typography>
                 </Grid>
 
-                <Grid item>
+                <Grid item style={{ marginTop: matchesSM ? '1em' : 0 }}>
                   <FormControl variant="filled" sx={{ width: 205 }}>
                     <InputLabel id="featuresinputlabel">Multiple Features</InputLabel>
                     <Select
@@ -392,7 +427,7 @@ const ModalDatePicker = (props) => {
               </Grid>
             </Grid>
 
-            <Grid container justifyContent='center'>
+            <Grid container justifyContent='center' style={{ marginTop: matchesSM ? '1em' : 0 }}>
               <Grid item>
                 <Button
                   variant='contained'
@@ -400,12 +435,13 @@ const ModalDatePicker = (props) => {
                   type='submit'
                   onClick={onSubmitFormulario}
                   disabled={
+                    isPending === true,
                     formulariostate.service === 'Website'
                       ?
                       formulariostate.nombre.length === 0 ||
                       formulariostate.total.length === 0 ||
                       formulariostate.features.length === 0 ||
-                      formulariostate.features.length > 1 
+                      formulariostate.features.length > 1
                       :
                       formulariostate.nombre.length === 0 ||
                       formulariostate.total.length === 0 ||
@@ -413,13 +449,13 @@ const ModalDatePicker = (props) => {
                       formulariostate.users.length === 0 ||
                       formulariostate.complexity.length === 0 ||
                       formulariostate.sistema.length === 0 ||
-                      formulariostate.service.length === 0
+                      formulariostate.service.length === 0                       
                   }
                 >Add Project +</Button>
               </Grid>
               <Grid style={{ margin: '1em' }}></Grid>
               <Grid item>
-                <Button variant='contained' color='secondary' onClick={() => setDialogOpen(false)}>Cancel</Button>
+                <Button variant='contained' color='secondary' onClick={() => {setDialogOpen(false); reset();}}>Cancel</Button>
               </Grid>
             </Grid>
           </Grid>

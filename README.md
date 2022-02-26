@@ -1,5 +1,14 @@
 # Next.js example
 
+## Content
+
+FrontEnd NextJs, Material-UI, Fetch
+MUI component DataGrid using add, delete, update, filter, edit inline
+Modify theme to MUI.
+Validation Form, using property disabled.
+Use useState with object default.
+Fetch API POST PUT GET.
+
 ## How to use
 
 Download the example [or clone the repo](https://github.com/mui-org/material-ui):
@@ -17,9 +26,3 @@ Install it and run:
 npm install
 npm run dev
 ```
-## Content
-
-MUI component DataGrid using add, delete, update, filter.
-Modify theme to MUI.
-Validation Form, using property disabled.
-Use useState with object default.

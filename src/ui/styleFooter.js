@@ -13,14 +13,14 @@ export const FooterUI = styled('footer')( ({ theme }) => ({
 }));
 
 export const ImgAdornment = styled('img') ( ({ theme }) => ({
-  width: '18em',
+  width: '15em',
   // Cambiar en que parte de la imagen está anclada a la pantalla
   verticalAlign: 'bottom',  
   [theme.breakpoints.down('md')]: {
-    width: '10em',
+    width: '8em',
   },
   [theme.breakpoints.down('xs')]: {
-    width: '7em',
+    width: '6em',
   },
   
 }));
